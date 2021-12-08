@@ -14,6 +14,7 @@ var tasks = new (IAocTask Prog, string InputFile)[]
     new (new Day5(), "data/5-hydrothermal-venture.txt"),
     new (new Day6(), "data/6-lanternfish.txt"),
     new (new Day7(), "data/7-treachery-of-whales.txt"),
+    new (new Day8(), "data/8-seven-segment-search.txt"),
     //new (new DayX(), "data/X-???.txt"),
 };
 
