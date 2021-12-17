@@ -23,6 +23,7 @@ var tasks = new (IAocTask Prog, string InputFile)[]
     new (new Day14(), "data/14-extended-polymerization.txt"),
     new (new Day15(), "data/15-chiton.txt"),
     new (new Day16(), "data/16-packet-decoder.txt"),
+    new (new Day17(), ""),
     //new (new DayX(), "data/X-???.txt"),
 };
 
