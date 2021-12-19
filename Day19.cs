@@ -30,8 +30,9 @@ namespace aoc2k21
                         var offsetsY = new Dictionary<int, List<(Point3, Point3)>>();
                         foreach (var newP in nCloud)
                         {
-                            foreach (var x in totCloud.Where(p => p.X == newP.X + off))
+                            foreach (var x in totCloud) 
                             {
+                                if (x.X != newP.X + off) continue;
                                 var p = (x, newP);
                                 pairs.Add(p);
 
@@ -133,19 +134,14 @@ namespace aoc2k21
 
     public class Point3
     {
-        public static readonly Point3 Zero = new Point3(new[] { 0, 0, 0 });
-        private readonly int[] coords;
-        public int X => coords[0];
-        public int Y => coords[1];
-        public int Z => coords[2];
-        private Point3(int[] coords) { this.coords = coords; }
-        public static Point3 Parse(string data) => new Point3(data.Split(',').Select(int.Parse).ToArray());
+        public static readonly Point3 Zero = new Point3(0, 0, 0);
+        public readonly int X;
+        public readonly int Y;
+        public readonly int Z;
 
-        public Point3 Rotate(int rComb)
-        {
-            Debug.Assert(rComb>=0 && rComb<24, "Valid range for rotation combination is [0..24]");
-            return new Point3(vecmul(rots[rComb], coords));
-        }
+        private Point3(int x,int y, int z) { X = x; Y = y; Z = z; }
+        private Point3(int[] coords) { X=coords[0]; Y=coords[1]; Z=coords[2]; }
+        public static Point3 Parse(string data) => new Point3(data.Split(',').Select(int.Parse).ToArray());
 
         public override string ToString() => $"({X,4},{Y,4},{Z,4})";
 
@@ -158,6 +154,11 @@ namespace aoc2k21
             return X == other.X && Y == other.Y && Z == other.Z;
         }
 
+        public Point3 Rotate(int rComb)
+        {
+            Debug.Assert(rComb>=0 && rComb<24, "Valid range for rotation combination is [0..24]");
+            return new Point3(vecmul(rots[rComb], this));
+        }
         public int Distance(Point3 other) => Math.Abs(X - other.X) + Math.Abs(Y - other.Y) + Math.Abs(Z - other.Z);
         public static Point3 operator -(Point3 a, Point3 b) => new Point3(new[] { a.X-b.X, a.Y-b.Y, a.Z-b.Z });
         public static Point3 operator +(Point3 a, Point3 b) => new Point3(new[] { a.X+b.X, a.Y+b.Y, a.Z+b.Z });
@@ -174,7 +175,7 @@ namespace aoc2k21
                 new int[] { a[1][0]*b[0][0] + a[1][1]*b[1][0] + a[1][2]*b[2][0], a[1][0]*b[0][1] + a[1][1]*b[1][1] + a[1][2]*b[2][1], a[1][0]*b[0][2] + a[1][1]*b[1][2] + a[1][2]*b[2][2] },
                 new int[] { a[2][0]*b[0][0] + a[2][1]*b[1][0] + a[2][2]*b[2][0], a[2][0]*b[0][1] + a[2][1]*b[1][1] + a[2][2]*b[2][1], a[2][0]*b[0][2] + a[2][1]*b[1][2] + a[2][2]*b[2][2] },
             };
-        private static int[] vecmul(int[][] a, int[] b) => new int[] { a[0][0]*b[0] + a[0][1]*b[1] + a[0][2]*b[2], a[1][0]*b[0] + a[1][1]*b[1] + a[1][2]*b[2], a[2][0]*b[0] + a[2][1]*b[1] + a[2][2]*b[2] };
+        private static int[] vecmul(int[][] a, Point3 p) => new int[] { a[0][0]*p.X + a[0][1]*p.Y + a[0][2]*p.Z, a[1][0]*p.X + a[1][1]*p.Y + a[1][2]*p.Z, a[2][0]*p.X + a[2][1]*p.Y + a[2][2]*p.Z };
 
         static Point3()
         {
