@@ -28,6 +28,7 @@ var tasks = new (IAocTask Prog, string InputFile)[]
     new (new Day19(), "data/19-beacon-scanner.txt"),
     new (new Day20(), "data/20-trench-map.txt"),
     new (new Day21(), ""), // Input is hardcoded in class
+    new (new Day22(), "data/22-reactor-reboot.txt"),
     //new (new DayX(), "data/X-???.txt"),
 };
 
