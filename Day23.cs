@@ -6,7 +6,7 @@ namespace aoc2k21
     {
         public long Task1(string indatafile)
         {
-            var indata = File.ReadAllLines(indatafile).Select(l => l).ToArray();
+            var indata = File.ReadAllLines(indatafile).Where((_,i) => i<3 || i > 4).Select(l => l).ToArray(); // Skip folded section
             var states = new List<State>();
             var initstate = new State(indata, 0) { pods = GetPods(indata) };
             initstate.Goal('A', (3, 3));
@@ -15,13 +15,25 @@ namespace aoc2k21
             initstate.Goal('D', (9, 3));
             MoveToGoal(initstate);
             states.Add(initstate);
-            var wonStates = new List<State>();
+            State best = new State(Array.Empty<string>(), int.MaxValue); // Dummy state
+            while (states.Any()) states = MakeMoves(states, ref best);
+            return best.cost;
+        }
 
-            while (states.Any()) states = MakeMoves(states, wonStates);
-
-            var s = wonStates.OrderBy(s => s.cost).First();
-            while (s != null) { Dump(s.map); s=s.parent; }
-            return wonStates.Min(s => s.cost);
+        public long Task2(string indatafile)
+        {
+            var indata = File.ReadAllLines(indatafile).Select(l => l).ToArray();
+            var states = new List<State>();
+            var initstate = new State(indata, 0) { pods = GetPods(indata) };
+            initstate.Goal('A', (3, 5));
+            initstate.Goal('B', (5, 5));
+            initstate.Goal('C', (7, 5));
+            initstate.Goal('D', (9, 5));
+            MoveToGoal(initstate);
+            states.Add(initstate);
+            State best = new State(Array.Empty<string>(), int.MaxValue);
+            while (states.Any()) states = MakeMoves(states, ref best);
+            return best.cost;
         }
 
         private List<Amphipod> GetPods(string[] map)
@@ -40,16 +52,12 @@ namespace aoc2k21
             return pods;
         }
 
-        private List<State> MakeMoves(List<State> states, List<State> won)
+        private List<State> MakeMoves(List<State> states, ref State best)
         {
-            State best = new State(Array.Empty<string>(), int.MaxValue);
             var newStates = new List<State>();
-            //var oneperc = states.Count/100;
-            //oneperc = oneperc == 0 ? 1 : oneperc;
             Console.WriteLine(states.Count);
             for (int sIdx = 0; sIdx < states.Count; sIdx++)
             {
-                //if (sIdx % oneperc == 0) Console.WriteLine($"{sIdx/oneperc}%");
                 var state = states[sIdx];
                 foreach (var pod in state.pods)
                 {
@@ -63,7 +71,6 @@ namespace aoc2k21
                         nextState.pods.Find(p => p.Equals(pod)).pos = corrPos; // Update pod pos in new state
                         nextState.cost += moveCost*pod.Cost;
                         nextState.map = MoveSymbol(state.map, pod.pos, corrPos);
-
                         // MoveToGoal affects passed state directly as it is never an option not to move a piece to its goal
                         MoveToGoal(nextState);
                         if (nextState.pods.Count == 0) // No more pods to move == goal
@@ -72,21 +79,16 @@ namespace aoc2k21
                             {
                                 var s = nextState;
                                 Console.WriteLine($"New best: {nextState.cost}");
-                                //while (s != null) { Dump(s.map); Console.WriteLine($"Cost: {s.cost}(+{s.cost - (s.parent?.cost ?? 0)})"); s=s.parent; }
                                 best = nextState;
-                                won.Add(nextState); ;
                             }
-                            continue;
                         }
-                        else newStates.Add(nextState);
+                        else if (nextState.cost < best.cost) newStates.Add(nextState); // No point in continuing state if it is more expensive than the best
                     }
                 }
                 // If we have reached this point without adding a child state for the current state the game is unsolveable and should not be continued anyway
             }
             return newStates;
         }
-
-        private void Dump(string[] map) { foreach (var line in map) Console.WriteLine(line); }
 
         private void MoveToGoal(State state)
         {
@@ -198,7 +200,6 @@ namespace aoc2k21
             public readonly char symbol;
             public P2D pos;
             public Amphipod(char symbol, P2D pos) { this.symbol = symbol; this.pos = pos; }
-            public override string ToString() => $"{symbol}({pos.x},{pos.y}){(InCorridor ? "C":"")}";
             public override bool Equals([NotNullWhen(true)] object? obj)
             {
                 if (obj == null) return false;
@@ -218,26 +219,19 @@ namespace aoc2k21
             public P2D Down => (x, y+1);
             public P2D Left => (x-1, y);
             public P2D Right => (x+1, y);
-            public override string ToString() => $"({x},{y})";
-            public override bool Equals([NotNullWhen(true)] object? obj)
-            {
-                if (obj == null) return false;
-                var other = (P2D)obj;
-                return x == other.x && y == other.y;
-            }
-        }
-
-        public long Task2(string indatafile)
-        {
-            var indata = File.ReadAllLines(indatafile).Select(l => l).ToArray();
-            return 0;
+            //public override bool Equals([NotNullWhen(true)] object? obj)
+            //{
+            //    if (obj == null) return false;
+            //    var other = (P2D)obj;
+            //    return x == other.x && y == other.y;
+            //}
         }
 
         private class State
         {
             public List<Amphipod> pods = new List<Amphipod> ();
             public List<(char symbol, P2D from, P2D to, int cost)> moves = new List<(char, P2D from, P2D to, int cost)>();
-            public State? parent;
+            //public State? parent;
             public string[] map;
             public P2D[] goal = new P2D[4];
             public P2D Goal(char symbol) => goal[symbol - 'A'];
@@ -253,10 +247,5 @@ namespace aoc2k21
                 pods = parent.pods.Select(a => new Amphipod(a)).ToList();
             }
         }
-    }
-
-    public static class Day23Ext
-    {
-        //public static string[] Update(this string[])
     }
 }
