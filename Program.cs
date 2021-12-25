@@ -30,8 +30,8 @@ var tasks = new (IAocTask Prog, string InputFile)[]
     new (new Day21(), ""), // Input is hardcoded in class
     new (new Day22(), "data/22-reactor-reboot.txt"),
     //new (new Day23(), "data/23-amphipod.txt"),
-    //new (new Day24(), "data/24-arithmetic-logic-unit.txt"),
-    new (new Day25(), "data/25-sea-cucumber.txt"),
+    new (new Day24(), "data/24-arithmetic-logic-unit.txt"),
+    //new (new Day25(), "data/25-sea-cucumber.txt"),
     //new (new DayX(), "data/X-???.txt"),
 };
 
