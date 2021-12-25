@@ -13,7 +13,7 @@ namespace aoc2k21
             initstate.Goal('B', (5, 3));
             initstate.Goal('C', (7, 3));
             initstate.Goal('D', (9, 3));
-            MoveToGoal(initstate);
+            //MoveToGoal(initstate);
             states.Enqueue(initstate);
             State best = new State(Array.Empty<string>(), int.MaxValue); // Dummy state
             while (states.Any()) states = MakeMoves(states, ref best);
@@ -29,7 +29,7 @@ namespace aoc2k21
             initstate.Goal('B', (5, 5));
             initstate.Goal('C', (7, 5));
             initstate.Goal('D', (9, 5));
-            MoveToGoal(initstate);
+            //MoveToGoal(initstate);
             states.Enqueue(initstate);
             State best = new State(Array.Empty<string>(), int.MaxValue);
             while (states.Any()) states = MakeMoves(states, ref best);
@@ -99,9 +99,6 @@ namespace aoc2k21
                 moved = false;
                 foreach (var pod in state.pods)
                 {
-                    //if (!pod.InCorridor) continue; // Amphipod has to be in corridor to be allowed to move to goal otherwise it just moves across
-                    var corr = pod.InCorridor;
-
                     if (MoveToGoal(state, pod))
                     {
                         toRemove.Add(pod);
@@ -114,14 +111,9 @@ namespace aoc2k21
 
         private bool MoveToGoal(State state, Amphipod pod)
         {
-
             var goalpos = state.Goal(pod.symbol);
-            //var goalpos = GoalPos(state.map, pod.symbol);
             var goalCost = CheckMove(state.map, pod.pos, goalpos);
             if (goalCost < 0) return false; // Move failed
-
-            //if (!pod.InCorridor) Console.WriteLine("Suspicious");
-
             state.moves.Add((pod.symbol, pod.pos, goalpos, goalCost * pod.Cost));
             state.cost+=goalCost * pod.Cost;
             state.map = MoveSymbol(state.map, pod.pos, goalpos, 'X');
@@ -220,19 +212,12 @@ namespace aoc2k21
             public P2D Down => (x, y+1);
             public P2D Left => (x-1, y);
             public P2D Right => (x+1, y);
-            //public override bool Equals([NotNullWhen(true)] object? obj)
-            //{
-            //    if (obj == null) return false;
-            //    var other = (P2D)obj;
-            //    return x == other.x && y == other.y;
-            //}
         }
 
         private class State
         {
             public List<Amphipod> pods = new List<Amphipod> ();
             public List<(char symbol, P2D from, P2D to, int cost)> moves = new List<(char, P2D from, P2D to, int cost)>();
-            //public State? parent;
             public string[] map;
             public P2D[] goal = new P2D[4];
             public P2D Goal(char symbol) => goal[symbol - 'A'];
@@ -241,7 +226,6 @@ namespace aoc2k21
             public int cost;
             public State(string[] map, int cost) { this.map = map; this.cost = cost; }
             public State(State parent) { 
-                //this.parent = parent;
                 map = (string[])parent.map.Clone();
                 Array.Copy(parent.goal, goal, 4);
                 cost = parent.cost;
