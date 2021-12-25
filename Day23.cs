@@ -7,14 +7,14 @@ namespace aoc2k21
         public long Task1(string indatafile)
         {
             var indata = File.ReadAllLines(indatafile).Where((_,i) => i<3 || i > 4).Select(l => l).ToArray(); // Skip folded section
-            var states = new List<State>();
+            var states = new Queue<State>();
             var initstate = new State(indata, 0) { pods = GetPods(indata) };
             initstate.Goal('A', (3, 3));
             initstate.Goal('B', (5, 3));
             initstate.Goal('C', (7, 3));
             initstate.Goal('D', (9, 3));
             MoveToGoal(initstate);
-            states.Add(initstate);
+            states.Enqueue(initstate);
             State best = new State(Array.Empty<string>(), int.MaxValue); // Dummy state
             while (states.Any()) states = MakeMoves(states, ref best);
             return best.cost;
@@ -23,14 +23,14 @@ namespace aoc2k21
         public long Task2(string indatafile)
         {
             var indata = File.ReadAllLines(indatafile).Select(l => l).ToArray();
-            var states = new List<State>();
+            var states = new Queue<State>();
             var initstate = new State(indata, 0) { pods = GetPods(indata) };
             initstate.Goal('A', (3, 5));
             initstate.Goal('B', (5, 5));
             initstate.Goal('C', (7, 5));
             initstate.Goal('D', (9, 5));
             MoveToGoal(initstate);
-            states.Add(initstate);
+            states.Enqueue(initstate);
             State best = new State(Array.Empty<string>(), int.MaxValue);
             while (states.Any()) states = MakeMoves(states, ref best);
             return best.cost;
@@ -52,19 +52,19 @@ namespace aoc2k21
             return pods;
         }
 
-        private List<State> MakeMoves(List<State> states, ref State best)
+        private Queue<State> MakeMoves(Queue<State> states, ref State best)
         {
-            var newStates = new List<State>();
             Console.WriteLine(states.Count);
-            for (int sIdx = 0; sIdx < states.Count; sIdx++)
+            var max = states.Count;
+            for (int sIdx = 0; sIdx < max; sIdx++)
             {
-                var state = states[sIdx];
+                var state = states.Dequeue();
                 foreach (var pod in state.pods)
                 {
                     if (pod.InCorridor) continue; // Already in corridor, skip
                     foreach (var corrPos in valid_corr_dest)
                     {
-                        var moveCost = CheckMove(state.map, pod, corrPos);
+                        var moveCost = CheckMove(state.map, pod.pos, corrPos);
                         if (moveCost < 0) continue; // Move failed
                         var nextState = new State(state);
                         nextState.moves.Add((pod.symbol, pod.pos, corrPos, moveCost*pod.Cost)); // Register move
@@ -82,12 +82,12 @@ namespace aoc2k21
                                 best = nextState;
                             }
                         }
-                        else if (nextState.cost < best.cost) newStates.Add(nextState); // No point in continuing state if it is more expensive than the best
+                        else if (nextState.cost < best.cost) states.Enqueue(nextState); // No point in continuing state if it is more expensive than the best
                     }
                 }
                 // If we have reached this point without adding a child state for the current state the game is unsolveable and should not be continued anyway
             }
-            return newStates;
+            return states;
         }
 
         private void MoveToGoal(State state)
@@ -117,7 +117,7 @@ namespace aoc2k21
 
             var goalpos = state.Goal(pod.symbol);
             //var goalpos = GoalPos(state.map, pod.symbol);
-            var goalCost = CheckMove(state.map, pod, goalpos);
+            var goalCost = CheckMove(state.map, pod.pos, goalpos);
             if (goalCost < 0) return false; // Move failed
 
             //if (!pod.InCorridor) Console.WriteLine("Suspicious");
@@ -146,22 +146,23 @@ namespace aoc2k21
             return map;
         }
 
-        private int CheckMove(string[] map, Amphipod pod, P2D to)
+        private int CheckMove(string[] map, P2D pos, P2D to)
         {
-            P2D curr = pod.pos;
-            int costX = 0, costY = 0;
-            if (curr.y >= to.y) 
+            P2D curr = pos;
+            int costX;
+            int costY;
+            if (curr.y >= to.y)
             {
-                costY = MoveVert(map, pod.pos, to.y); // Destination corridor - move vertically first
+                costY = MoveVert(map, pos, to.y); // Destination corridor - move vertically first
                 if (costY < 0) return -1;
-                costX = MoveHorz(map, (pod.pos.x, to.y), to.x);
+                costX = MoveHorz(map, (pos.x, to.y), to.x);
                 if (costX < 0) return -1;
             }
             else
             {
-                costX = MoveHorz(map, pod.pos, to.x); // Destination goal - move horizontally first
+                costX = MoveHorz(map, pos, to.x); // Destination goal - move horizontally first
                 if (costX < 0) return -1;
-                costY = MoveVert(map, (to.x,pod.pos.y), to.y);
+                costY = MoveVert(map, (to.x, pos.y), to.y);
                 if (costY < 0) return -1;
             }
             return costX + costY;
