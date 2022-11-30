@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace aoc2k21
+namespace aoc2021
 {
     internal class Day23 : IAocTask
     {

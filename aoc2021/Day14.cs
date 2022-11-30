@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace aoc2k21
+namespace aoc2021
 {
     internal class Day14 : IAocTask
     {

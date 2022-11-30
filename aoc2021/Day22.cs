@@ -1,4 +1,4 @@
-﻿namespace aoc2k21
+﻿namespace aoc2021
 {
     internal class Day22 : IAocTask
     {
