@@ -1,4 +1,4 @@
-﻿using aoc2k21;
+﻿using aoc2021;
 using System.Diagnostics;
 
 /// <summary>
@@ -32,7 +32,6 @@ var tasks = new (IAocTask Prog, string InputFile)[]
     new (new Day23(), "data/23-amphipod.txt"),
     new (new Day24(), "data/24-arithmetic-logic-unit.txt"),
     new (new Day25(), "data/25-sea-cucumber.txt"),
-    new (new Day23(), "data/23-amphipod.txt"),
     //new (new DayX(), "data/X-???.txt"),
 };
 

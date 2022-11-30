@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace aoc2k21
+namespace aoc2021
 {
     internal class Day19 : IAocTask
     {
