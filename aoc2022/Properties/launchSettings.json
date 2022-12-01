@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "aoc2022": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    }
+  }
+}
