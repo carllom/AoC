@@ -1,4 +1,5 @@
 ﻿using common;
+using common.Algorithms;
 
 namespace aoc2022
 {
