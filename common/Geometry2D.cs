@@ -8,7 +8,7 @@ namespace common
         public Point2(int x, int y) { this.x = x; this.y = y; }
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
-            if (!(obj is Point2)) return false;
+            if (obj is not Point2) return false;
             var o = (Point2)obj;
             return x==o.x && y == o.y;
         }
