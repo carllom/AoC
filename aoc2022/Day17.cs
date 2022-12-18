@@ -4,7 +4,7 @@ using System.Text;
 namespace aoc2022
 {
     [AocDay(17, Caption = "")]
-    internal class Day17Alt
+    internal class Day17
     {
         [AocTask(1)]
         public int Task1()
@@ -54,17 +54,13 @@ namespace aoc2022
                         shape = null;
                         shapecount++;
 
-                        var minlevel = blockers.Min();
+                        var minlevel = int.Max(0,blockers.Min() -3); // We cannot remove upto minlevel entirely. There might be a diagonal passage left.
                         if (minlevel > heightStart)
                         {
                             shaft.RemoveRange(1, minlevel-heightStart);
+                            heightStart = minlevel;
                         }
-                        heightStart = minlevel;
-
-                        //for (int i = shaft.Count-1; i >=0; i--)
-                        //{
-                        //    Console.WriteLine($"{shaft[i]} {heightStart+i}");
-                        //}
+                        //for (int i = shaft.Count-1; i >=0; i--) Console.WriteLine($"{shaft[i]} {heightStart+i}");
                         //Console.WriteLine($"top {height}, start@ {heightStart}");
                         continue;
                     }
@@ -87,7 +83,6 @@ namespace aoc2022
                     if (shift.Equals(shaft[shapeY+i])) { stuck = true; break; }
                     shifted.Add(shift);
                 }
-                //Console.WriteLine($"Used wind {input[windex]}({windex}) (stuck: {stuck})");
                 if (!stuck)
                 {
                     for (int i = 0; i < shifted.Count; i++)
@@ -97,15 +92,7 @@ namespace aoc2022
                 }
                 windex = (windex+1) % input.Length;
             }
-
-            for (int i = shaft.Count-1; i >=0; i--)
-            {
-                Console.WriteLine($"{shaft[i]} {heightStart+i}");
-            }
-            Console.WriteLine($"top {height}, start@ {heightStart}");
-
-
-            return shaft.Count(k=> k.Contains('#')) + heightStart;
+            return height;
         }
 
         private string[][] shapes = new string[][]
@@ -158,29 +145,23 @@ namespace aoc2022
         [AocTask(2)]
         public int Task2()
         {
-            var input = AocInput.GetText(17, true);
+            var input = AocInput.GetText(17);
 
-            var shaft = new List<string>
-            {
-                "+-------+"
-            };
+            var shaft = new List<string>();
+            shaft.Add("+-------+");
             var row = "|.......|";
             for (int i = 0; i<3; i++) { shaft.Add(row); };
 
-            var winds = input.Length;
-
+            int heightStart = 0;
+            var blockers = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
 
             int shapeidx = 0, shapeY = shaft.Count, windex = 0, height = 1, shapecount = 0;
-
-            bool first = true;
-            int shape0 = 0, windex0 = 0;
-
             string[]? shape = null;
-            while (true)//shapecount < 2022)
+            while (shapecount < 2022)
             {
                 if (shape == null)
                 { // Select shape and add to shaft
-                    while (shaft.Count > height+4) shaft.RemoveAt(shaft.Count-1); // truncate shaft
+                    while (shaft.Count > height-heightStart+4) shaft.RemoveAt(shaft.Count-1); // truncate shaft
                     shape = shapes[shapeidx]; shapeidx = (shapeidx+1) % shapes.Length;
                     shapeY = shaft.Count;
                     for (int i = 0; i < shape.Length; i++) shaft.Add(shape[i]);
@@ -200,26 +181,24 @@ namespace aoc2022
                         for (int i = 0; i < shape.Length; i++)
                         {
                             shaft[shapeY+i] = shaft[shapeY+i].Replace('@', '#');
+                            var currHeight = heightStart+shapeY+i;
+                            for (int j = 0; j < 7; j++)
+                            {
+                                if (shaft[shapeY+i][j+1] == '#' && blockers[j] < currHeight) blockers[j] = currHeight;
+                            }
                         }
-                        height = Math.Max(height, shapeY+shape.Length-1);// shaft.Count(k => k.Contains('#'));
+                        height = Math.Max(height, heightStart+shapeY+shape.Length-1); //height = shaft.Count(k => k.Contains('#'));
                         shape = null;
                         shapecount++;
 
-                        //for (int i = shaft.Count-1; i >=0; i--)
-                        //{
-                        //    Console.WriteLine(shaft[i]);
-                        //}
-                        if (shapecount%1000 == 0)
-                            Console.WriteLine($"count {shapecount} top {height}, item {shapecount%4} windindex {windex}");
-                        if (first)
+                        var minlevel = int.Max(0, blockers.Min() -3);
+                        if (minlevel > heightStart)
                         {
-                            shape0 = shapecount%4;
-                            windex0 = windex;
+                            shaft.RemoveRange(1, minlevel-heightStart);
+                            heightStart = minlevel;
                         }
-                        else if (shape0 == shapecount%4 && windex0==windex)
-                        {
-                            Console.WriteLine(height);
-                        }
+                        //for (int i = shaft.Count-1; i >=0; i--) Console.WriteLine($"{shaft[i]} {heightStart+i}");
+                        //Console.WriteLine($"top {height}, start@ {heightStart}");
                         continue;
                     }
                     else
@@ -241,7 +220,6 @@ namespace aoc2022
                     if (shift.Equals(shaft[shapeY+i])) { stuck = true; break; }
                     shifted.Add(shift);
                 }
-                //Console.WriteLine($"Used wind {input[windex]}({windex}) (stuck: {stuck})");
                 if (!stuck)
                 {
                     for (int i = 0; i < shifted.Count; i++)
@@ -251,7 +229,7 @@ namespace aoc2022
                 }
                 windex = (windex+1) % input.Length;
             }
-            return shaft.Count(k => k.Contains('#'));
+            return height;
         }
     }
 }
