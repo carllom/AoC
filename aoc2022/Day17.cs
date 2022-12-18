@@ -50,7 +50,7 @@ namespace aoc2022
                                 if (shaft[shapeY+i][j+1] == '#' && blockers[j] < currHeight) blockers[j] = currHeight;
                             }
                         }
-                        height = Math.Max(height, heightStart+shapeY+shape.Length-1); //height = shaft.Count(k => k.Contains('#'));
+                        height = Math.Max(height, heightStart+shapeY+shape.Length-1);
                         shape = null;
                         shapecount++;
 
@@ -143,21 +143,28 @@ namespace aoc2022
         }
 
         [AocTask(2)]
-        public int Task2()
+        public long Task2()
         {
-            var input = AocInput.GetText(17);
+            var input = AocInput.GetText(17, false);
 
             var shaft = new List<string>();
             shaft.Add("+-------+");
             var row = "|.......|";
             for (int i = 0; i<3; i++) { shaft.Add(row); };
 
-            int heightStart = 0;
-            var blockers = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
+            long heightStart = 0;
+            var blockers = new long[7] { 0, 0, 0, 0, 0, 0, 0 };
 
-            int shapeidx = 0, shapeY = shaft.Count, windex = 0, height = 1, shapecount = 0;
+            int shapeidx = 0, windex = 0, shapeY = shaft.Count;
+            long height = 1, shapecount = 0;
             string[]? shape = null;
-            while (shapecount < 2022)
+
+            bool warped = false;
+            int warpwarmup = 0;
+            var windindexlog = new Dictionary<(int winindex, int shape), (long height, long shapecount)>();
+            long targetcount = 1000000000000L;
+
+            while (shapecount < targetcount)
             {
                 if (shape == null)
                 { // Select shape and add to shaft
@@ -165,6 +172,32 @@ namespace aoc2022
                     shape = shapes[shapeidx]; shapeidx = (shapeidx+1) % shapes.Length;
                     shapeY = shaft.Count;
                     for (int i = 0; i < shape.Length; i++) shaft.Add(shape[i]);
+
+                    if (!warped)
+                    {
+                        if (windindexlog.ContainsKey((windex, shapeidx)))
+                        {
+                            var lastVal = windindexlog[(windex, shapeidx)];
+                            windindexlog[(windex, shapeidx)] = (height, shapecount);
+                            warpwarmup++;
+                            if (warpwarmup >= 4)
+                            {
+                                // Shortcut!
+                                var dHeight = height-lastVal.height;
+                                var dShapes = shapecount-lastVal.shapecount;
+                                var numPeriods = (targetcount-shapecount) / dShapes;
+                                height += numPeriods * dHeight;
+                                heightStart += numPeriods * dHeight;
+                                shapecount += numPeriods * dShapes;
+                                warped = true;
+                                if (shapecount == targetcount) return height;
+                            }
+                        }
+                        else
+                        {
+                            windindexlog.Add((windex, shapeidx), (height, shapecount));
+                        }
+                    }
                 }
                 else
                 {
@@ -187,14 +220,14 @@ namespace aoc2022
                                 if (shaft[shapeY+i][j+1] == '#' && blockers[j] < currHeight) blockers[j] = currHeight;
                             }
                         }
-                        height = Math.Max(height, heightStart+shapeY+shape.Length-1); //height = shaft.Count(k => k.Contains('#'));
+                        height = Math.Max(height, heightStart+shapeY+shape.Length-1);
                         shape = null;
                         shapecount++;
 
-                        var minlevel = int.Max(0, blockers.Min() -3);
+                        var minlevel = long.Max(0, blockers.Min() -3);
                         if (minlevel > heightStart)
                         {
-                            shaft.RemoveRange(1, minlevel-heightStart);
+                            shaft.RemoveRange(1, (int)(minlevel-heightStart));
                             heightStart = minlevel;
                         }
                         //for (int i = shaft.Count-1; i >=0; i--) Console.WriteLine($"{shaft[i]} {heightStart+i}");
