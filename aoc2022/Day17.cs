@@ -3,7 +3,7 @@ using System.Text;
 
 namespace aoc2022
 {
-    [AocDay(17, Caption = "")]
+    [AocDay(17, Caption = "Pyroclastic Flow")]
     internal class Day17
     {
         [AocTask(1)]
