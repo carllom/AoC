@@ -4,24 +4,27 @@ using System.Text;
 namespace aoc2022
 {
     [AocDay(17, Caption = "")]
-    internal class Day17
+    internal class Day17Alt
     {
         [AocTask(1)]
         public int Task1()
         {
-            var input = AocInput.GetText(17,false);
+            var input = AocInput.GetText(17);
 
             var shaft = new List<string>();
             shaft.Add("+-------+");
             var row = "|.......|";
             for (int i = 0; i<3; i++) { shaft.Add(row); } ;
 
+            int heightStart = 0;
+            var blockers = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
+
             int shapeidx = 0, shapeY = shaft.Count, windex = 0, height = 1, shapecount = 0;
             string[]? shape = null;
             while (shapecount < 2022)
             {
                 if (shape == null) { // Select shape and add to shaft
-                    while (shaft.Count > height+4) shaft.RemoveAt(shaft.Count-1); // truncate shaft
+                    while (shaft.Count > height-heightStart+4) shaft.RemoveAt(shaft.Count-1); // truncate shaft
                     shape = shapes[shapeidx]; shapeidx = (shapeidx+1) % shapes.Length;
                     shapeY = shaft.Count;
                     for (int i = 0; i < shape.Length; i++) shaft.Add(shape[i]);
@@ -41,16 +44,28 @@ namespace aoc2022
                         for (int i = 0; i < shape.Length; i++)
                         {
                             shaft[shapeY+i] = shaft[shapeY+i].Replace('@', '#');
+                            var currHeight = heightStart+shapeY+i;
+                            for (int j = 0; j < 7; j++)
+                            {
+                                if (shaft[shapeY+i][j+1] == '#' && blockers[j] < currHeight) blockers[j] = currHeight;
+                            }
                         }
-                        height = Math.Max(height, shapeY+shape.Length-1); //height = shaft.Count(k => k.Contains('#'));
+                        height = Math.Max(height, heightStart+shapeY+shape.Length-1); //height = shaft.Count(k => k.Contains('#'));
                         shape = null;
                         shapecount++;
 
+                        var minlevel = blockers.Min();
+                        if (minlevel > heightStart)
+                        {
+                            shaft.RemoveRange(1, minlevel-heightStart);
+                        }
+                        heightStart = minlevel;
+
                         //for (int i = shaft.Count-1; i >=0; i--)
                         //{
-                        //    Console.WriteLine(shaft[i]);
+                        //    Console.WriteLine($"{shaft[i]} {heightStart+i}");
                         //}
-                        //Console.WriteLine($"top {height}");
+                        //Console.WriteLine($"top {height}, start@ {heightStart}");
                         continue;
                     }
                     else
@@ -82,7 +97,15 @@ namespace aoc2022
                 }
                 windex = (windex+1) % input.Length;
             }
-            return shaft.Count(k=> k.Contains('#'));
+
+            for (int i = shaft.Count-1; i >=0; i--)
+            {
+                Console.WriteLine($"{shaft[i]} {heightStart+i}");
+            }
+            Console.WriteLine($"top {height}, start@ {heightStart}");
+
+
+            return shaft.Count(k=> k.Contains('#')) + heightStart;
         }
 
         private string[][] shapes = new string[][]
