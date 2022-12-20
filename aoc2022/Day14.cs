@@ -2,7 +2,7 @@
 
 namespace aoc2022
 {
-    [AocDay(14, Caption = "")]
+    [AocDay(14, Caption = "Regolith Reservoir")]
     internal class Day14
     {
         [AocTask(1)]

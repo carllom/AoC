@@ -2,7 +2,7 @@
 
 namespace aoc2022
 {
-    [AocDay(15, Caption = "")]
+    [AocDay(15, Caption = "Beacon Exclusion Zone")]
     internal class Day15
     {
         [AocTask(1)]
