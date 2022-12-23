@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Text;
 
 namespace common
@@ -47,6 +48,55 @@ namespace common
                     map[y, x] = arr[y][x];
                 }
             }
+        }
+
+        public Rectangle Bounds(Func<T,bool> contains)
+        {
+            var r = new Rectangle(int.MaxValue, int.MaxValue, int.MinValue, int.MinValue);
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var m = map[y, x];
+                    if (contains(m))
+                    {
+                        r.x0 = Math.Min(r.x0, x); r.x1 = Math.Max(r.x1, x);
+                        r.y0 = Math.Min(r.y0, y); r.y1 = Math.Max(r.y1, y);
+                    }
+                }
+            }
+            return r;
+        }
+
+        public long Count(T val, Rectangle? bounds) 
+        {
+            var b = (bounds == null) ? new Rectangle(0,0, width-1, height-1) : bounds.Value;
+            long count = 0; ;
+            for (int y = b.y0; y <= b.y1; y++)
+            {
+                for (int x = b.x0; x <= b.x1; x++)
+                {
+                    if (map[y, x].Equals(val)) count++;
+                }
+            }
+            return count;
+        }
+
+        public Map<T> Grow(T edges)
+        {
+            var newmap = new Map<T>(width+2, height+2);
+            for (int x = 0; x < newmap.width; x++)
+            {
+                newmap.Set(x, 0, edges); newmap.Set(x, newmap.height-1, edges);
+            }
+            for (int y = 1; y < newmap.height-1; y++)
+            {
+                for (int x = 0; x < newmap.width; x++)
+                {
+                    newmap.Set(x,y,(x==0 || x==newmap.width-1) ? edges : map[y-1,x-1]);
+                }
+            }
+            return newmap;
         }
 
         public IEnumerable<Cell<T>> Neighbors(Cell<T> cell)
