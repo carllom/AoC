@@ -33,10 +33,10 @@ namespace aoc2022
             DrawPaths(input, span, map);
 
             int grains = 0, emitX = 500 - span.x0, emitY = 0;
-            while(DropGrain(map, emitX, emitY))
+            while (DropGrain(map, emitX, emitY))
             {
                 grains++;
-                if (map.Get(emitX, emitY) == 'o') break; // exit condition
+                if (map[emitX, emitY] == 'o') break; // exit condition
             }
             return grains;
         }
@@ -51,11 +51,11 @@ namespace aoc2022
                     var to = path[i];
                     if (from.y != to.y) // Vertical line
                     {
-                        for (int y = int.Min(from.y, to.y); y <= int.Max(from.y, to.y); y++) map.Set(from.x - span.x0, y, '#');
+                        for (int y = int.Min(from.y, to.y); y <= int.Max(from.y, to.y); y++) map[from.x - span.x0, y] = '#';
                     }
                     else if (from.x != to.x) // Horizontal line
                     {
-                        for (int x = int.Min(from.x, to.x); x <= int.Max(from.x, to.x); x++) map.Set(x - span.x0, from.y, '#');
+                        for (int x = int.Min(from.x, to.x); x <= int.Max(from.x, to.x); x++) map[x - span.x0, from.y] = '#';
                     }
                     from = to;
                 }
@@ -82,7 +82,7 @@ namespace aoc2022
                 {
                     grainY++; grainX++; continue;
                 }
-                return map.Set2(grainX, grainY, 'o'); // Grain landed - add it to map
+                return map.CheckAndSet(grainX, grainY, 'o'); // Grain landed - add it to map
             }
         }
     }
