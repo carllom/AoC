@@ -10,10 +10,10 @@ namespace aoc2022
         {
             var map = ReadMap();
             Point2 target = new(map.width-2, map.height-1); // goal pos
-            map.Get(1, 0).dude = 0; // Initial pos
+            map[1, 0].dude = 0; // Initial pos
 
             map = Travel(map, target);
-            return map.Get(target.x, target.y).dude;
+            return map[target].dude;
         }
 
         [AocTask(2)]
@@ -21,14 +21,14 @@ namespace aoc2022
         {
             var map = ReadMap();
             Point2 start = new(1, 0), end = new(map.width-2, map.height-1);
-            map.Get(start).dude = 0; // Initial pos
+            map[start].dude = 0; // Initial pos
 
             map = Travel(map, end);
             map.Each((x, y, b) => { if (x!=end.x || y != end.y) b.dude = int.MaxValue; }); // Clear all dudes except the winning
             map = Travel(map, start);
             map.Each((x, y, b) => { if (x!=start.x || y != start.y) b.dude = int.MaxValue; });
             map = Travel(map, end);
-            return map.Get(end).dude;
+            return map[end].dude;
         }
 
         private Map<Bliz> ReadMap()
@@ -48,7 +48,7 @@ namespace aoc2022
                         '<' => 8,
                         '#' => 16
                     };
-                    map.Set(x, y, new Bliz(state));
+                    map[x, y] = new Bliz(state);
                 }
             }
             return map;
@@ -66,10 +66,10 @@ namespace aoc2022
                         if (!n.value.Open || n.value.dude <= c.value.dude+1) continue; // Crushed by blizzard or another dude bested me
                         n.value.dude = c.value.dude + 1; // Its open and I have the least moves
                     }
-                    var nc = newmap.Get(c.x, c.y); // Old position in new map
+                    var nc = newmap[c.x, c.y]; // Old position in new map
                     if (nc.Open && nc.dude > c.value.dude+1) nc.dude = c.value.dude+1; // wait in last position
                 }
-                if (newmap.Get(target).dude < int.MaxValue)
+                if (newmap[target].dude < int.MaxValue)
                     return newmap;
                 map = newmap;
             }
@@ -78,17 +78,17 @@ namespace aoc2022
         private Map<Bliz> Tick(Map<Bliz> map)
         {
             Map<Bliz> newMap = Map<Bliz>.Copy(map);
-            newMap.Set(1, 0, new Bliz()); newMap.Set(newMap.width-2, newMap.height-1, new Bliz()); // Clear start/goal positions
-            newMap.Set(new Rectangle(1, 1, newMap.width-2, newMap.height-2), (int x, int y) => new Bliz());
+            newMap[1, 0] = new Bliz(); newMap[newMap.width-2, newMap.height-1] = new Bliz(); // Clear start/goal positions
+            newMap.Fill(new Rectangle(1, 1, newMap.width-2, newMap.height-2), (int x, int y) => new Bliz());
             for (int y = 1; y < map.height-1; y++)
             {
                 for (int x = 1; x < map.width-1; x++)
                 {
-                    var b = map.Get(x, y);
-                    if (b.Up) { var c = newMap.Get(x, ((y-2+newMap.height-2)%(newMap.height-2))+1); c.Up = true; b.Up = false; }
-                    if (b.Down) { var c = newMap.Get(x, (y%(newMap.height-2))+1); c.Down = true; b.Down = false; }
-                    if (b.Left) { var c = newMap.Get(((x-2+newMap.width-2)%(newMap.width-2))+1, y); c.Left = true; b.Left = false; }
-                    if (b.Right) { var c = newMap.Get((x%(newMap.width-2))+1, y); c.Right = true; b.Right = false; }
+                    var b = map[x, y];
+                    if (b.Up) { var c = newMap[x, ((y-2+newMap.height-2)%(newMap.height-2))+1]; c.Up = true; b.Up = false; }
+                    if (b.Down) { var c = newMap[x, (y%(newMap.height-2))+1]; c.Down = true; b.Down = false; }
+                    if (b.Left) { var c = newMap[((x-2+newMap.width-2)%(newMap.width-2))+1, y]; c.Left = true; b.Left = false; }
+                    if (b.Right) { var c = newMap[(x%(newMap.width-2))+1, y]; c.Right = true; b.Right = false; }
                 }
             }
             return newMap;

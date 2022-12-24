@@ -14,10 +14,10 @@ namespace aoc2022
             var start = 0;
             var cons = new Func<int, int, bool>[]
             {
-                (int x, int y) => { if (map.Get(x-1, y-1) == '.' && map.Get(x, y-1) == '.' && map.Get(x+1, y-1) == '.') { AddTo(moves, new(x,y), new(x, y-1)); return true; } return false; }, // N
-                (int x, int y) => { if (map.Get(x-1, y+1) == '.' && map.Get(x, y+1) == '.' && map.Get(x+1, y+1) == '.') { AddTo(moves, new(x,y), new(x, y+1)); return true; } return false; }, // S
-                (int x, int y) => { if (map.Get(x-1, y+1) == '.' && map.Get(x-1, y) == '.' && map.Get(x-1, y-1) == '.') { AddTo(moves, new(x,y), new(x-1, y)); return true; } return false; }, // W
-                (int x, int y) => { if (map.Get(x+1, y+1) == '.' && map.Get(x+1, y) == '.' && map.Get(x+1, y-1) == '.') { AddTo(moves, new(x,y), new(x+1, y)); return true; } return false; } // E
+                (int x, int y) => { if (map[x-1, y-1] == '.' && map[x, y-1] == '.' && map[x+1, y-1] == '.') { AddTo(moves, new(x,y), new(x, y-1)); return true; } return false; }, // N
+                (int x, int y) => { if (map[x-1, y+1] == '.' && map[x, y+1] == '.' && map[x+1, y+1] == '.') { AddTo(moves, new(x,y), new(x, y+1)); return true; } return false; }, // S
+                (int x, int y) => { if (map[x-1, y+1] == '.' && map[x-1, y] == '.' && map[x-1, y-1] == '.') { AddTo(moves, new(x,y), new(x-1, y)); return true; } return false; }, // W
+                (int x, int y) => { if (map[x+1, y+1] == '.' && map[x+1, y] == '.' && map[x+1, y-1] == '.') { AddTo(moves, new(x,y), new(x+1, y)); return true; } return false; } // E
             };
 
             for (int rounds = 0; rounds < 10; rounds++)
@@ -29,7 +29,7 @@ namespace aoc2022
                 {
                     for (int x = 1; x < map.width-1; x++)
                     {
-                        if (map.Get(x, y) == '.') continue; // Skip empty
+                        if (map[x, y] == '.') continue; // Skip empty
                         if (map.Count('.', new Rectangle(x-1, y-1, x+1, y+1)) == 8) continue; // Empty all around - do not move
                         if (cons[start%4](x, y)) continue; // Try 1st direction
                         if (cons[(start+1)%4](x, y)) continue; // Try 2nd direction..
@@ -40,8 +40,8 @@ namespace aoc2022
                 foreach (var move in moves)
                 {
                     if (move.Value.Count > 1) continue;
-                    map.Set(move.Value[0].x, move.Value[0].y, '.');
-                    map.Set(move.Key.x, move.Key.y, '#');
+                    map[move.Value[0].x, move.Value[0].y] = '.';
+                    map[move.Key.x, move.Key.y] = '#';
                 }
                 start++;
             }
@@ -59,10 +59,10 @@ namespace aoc2022
             var start = 0;
             var cons = new Func<int, int, bool>[]
             {
-                (int x, int y) => { if (map.Get(x-1, y-1) == '.' && map.Get(x, y-1) == '.' && map.Get(x+1, y-1) == '.') { AddTo(moves, new(x,y), new(x, y-1)); return true; } return false; }, // N
-                (int x, int y) => { if (map.Get(x-1, y+1) == '.' && map.Get(x, y+1) == '.' && map.Get(x+1, y+1) == '.') { AddTo(moves, new(x,y), new(x, y+1)); return true; } return false; }, // S
-                (int x, int y) => { if (map.Get(x-1, y+1) == '.' && map.Get(x-1, y) == '.' && map.Get(x-1, y-1) == '.') { AddTo(moves, new(x,y), new(x-1, y)); return true; } return false; }, // W
-                (int x, int y) => { if (map.Get(x+1, y+1) == '.' && map.Get(x+1, y) == '.' && map.Get(x+1, y-1) == '.') { AddTo(moves, new(x,y), new(x+1, y)); return true; } return false; } // E
+                (int x, int y) => { if (map[x-1, y-1] == '.' && map[x, y-1] == '.' && map[x+1, y-1] == '.') { AddTo(moves, new(x,y), new(x, y-1)); return true; } return false; }, // N
+                (int x, int y) => { if (map[x-1, y+1] == '.' && map[x, y+1] == '.' && map[x+1, y+1] == '.') { AddTo(moves, new(x,y), new(x, y+1)); return true; } return false; }, // S
+                (int x, int y) => { if (map[x-1, y+1] == '.' && map[x-1, y] == '.' && map[x-1, y-1] == '.') { AddTo(moves, new(x,y), new(x-1, y)); return true; } return false; }, // W
+                (int x, int y) => { if (map[x+1, y+1] == '.' && map[x+1, y] == '.' && map[x+1, y-1] == '.') { AddTo(moves, new(x,y), new(x+1, y)); return true; } return false; } // E
             };
 
             while (true)
@@ -74,7 +74,7 @@ namespace aoc2022
                 {
                     for (int x = 1; x < map.width-1; x++)
                     {
-                        if (map.Get(x, y) == '.') continue; // Skip empty
+                        if (map[x, y] == '.') continue; // Skip empty
                         if (map.Count('.', new(x-1, y-1, x+1, y+1)) == 8) continue; // Empty all around - do not move
                         if (cons[start%4](x, y)) continue; // Try 1st direction
                         if (cons[(start+1)%4](x, y)) continue; // Try 2nd direction..
@@ -86,8 +86,8 @@ namespace aoc2022
                 foreach (var move in moves)
                 {
                     if (move.Value.Count > 1) continue;
-                    map.Set(move.Value[0].x, move.Value[0].y, '.');
-                    map.Set(move.Key.x, move.Key.y, '#');
+                    map[move.Value[0].x, move.Value[0].y] = '.';
+                    map[move.Key.x, move.Key.y] = '#';
                 }
                 start++;
             }

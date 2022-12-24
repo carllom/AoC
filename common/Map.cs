@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Text;
 
 namespace common
@@ -113,13 +112,13 @@ namespace common
             var newmap = new Map<T>(width+2, height+2);
             for (int x = 0; x < newmap.width; x++)
             {
-                newmap.Set(x, 0, edges); newmap.Set(x, newmap.height-1, edges);
+                newmap.map[0,x] = edges; newmap.map[newmap.height-1, x] = edges;
             }
             for (int y = 1; y < newmap.height-1; y++)
             {
                 for (int x = 0; x < newmap.width; x++)
                 {
-                    newmap.Set(x,y,(x==0 || x==newmap.width-1) ? edges : map[y-1,x-1]);
+                    newmap.map[y,x] = (x==0 || x==newmap.width-1) ? edges : map[y-1,x-1];
                 }
             }
             return newmap;
@@ -135,15 +134,23 @@ namespace common
             return n;
         }
 
+        public T this[int x, int y]
+        {
+            get => map[y, x];
+            set => map[y, x] = value;
+        }
+        public T this[Point2 p] 
+        {
+            get => map[p.y, p.x];
+            set => map[p.y, p.x] = value;
+        }
+
         private bool IsIn(int x, int y) => x >= 0 && x < width && y >= 0 && y < height;
 
         public T? Check(int x, int y) => IsIn(x, y) ? map[y, x] : default;
-        public T Get(int x, int y) => map[y, x];
-        public T Get(Point2 p) => map[p.y, p.x];
-        public void Set(int x, int y, T value) => map[y, x] = value;
-        public bool Set2(int x, int y, T value) { if (!IsIn(x, y)) return false; map[y, x] = value; return true; }
+        public bool CheckAndSet(int x, int y, T value) { if (!IsIn(x, y)) return false; map[y, x] = value; return true; }
         public void Set(Cell<T> cell) => map[cell.y, cell.x] = cell.value;
-        public void Set(Rectangle r, T value)
+        public void Fill(Rectangle r, T value)
         {
             for (int y = r.y0; y <= r.y1; y++)
             {
@@ -153,7 +160,7 @@ namespace common
                 }
             }
         }
-        public void Set(Rectangle r, Func<int,int,T> factory)
+        public void Fill(Rectangle r, Func<int,int,T> factory)
         {
             for (int y = r.y0; y <= r.y1; y++)
             {
