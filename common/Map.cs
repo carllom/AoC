@@ -50,6 +50,32 @@ namespace common
             }
         }
 
+        public static Map<T> Copy(Map<T> orig)
+        {
+            Map<T> copy = new(orig.width, orig.height);
+            for (int y = 0; y < orig.height; y++)
+            {
+                for (int x = 0; x < orig.width; x++)
+                {
+                    copy.map[y,x] =  orig.map[y,x];
+                }
+            }
+            return copy;
+        }
+        public static Map<T> Copy(Map<T> orig, Func<T,T> copyfunc)
+        {
+            var vt = typeof(T).IsValueType;
+            Map<T> copy = new(orig.width, orig.height);
+            for (int y = 0; y < orig.height; y++)
+            {
+                for (int x = 0; x < orig.width; x++)
+                {
+                    copy.map[y, x] = copyfunc(orig.map[y, x]);
+                }
+            }
+            return copy;
+        }
+
         public Rectangle Bounds(Func<T,bool> contains)
         {
             var r = new Rectangle(int.MaxValue, int.MaxValue, int.MinValue, int.MinValue);
@@ -113,9 +139,30 @@ namespace common
 
         public T? Check(int x, int y) => IsIn(x, y) ? map[y, x] : default;
         public T Get(int x, int y) => map[y, x];
+        public T Get(Point2 p) => map[p.y, p.x];
         public void Set(int x, int y, T value) => map[y, x] = value;
         public bool Set2(int x, int y, T value) { if (!IsIn(x, y)) return false; map[y, x] = value; return true; }
         public void Set(Cell<T> cell) => map[cell.y, cell.x] = cell.value;
+        public void Set(Rectangle r, T value)
+        {
+            for (int y = r.y0; y <= r.y1; y++)
+            {
+                for (int x = r.x0; x <= r.x1; x++)
+                {
+                    map[y, x] = value;
+                }
+            }
+        }
+        public void Set(Rectangle r, Func<int,int,T> factory)
+        {
+            for (int y = r.y0; y <= r.y1; y++)
+            {
+                for (int x = r.x0; x <= r.x1; x++)
+                {
+                    map[y, x] = factory(x,y);
+                }
+            }
+        }
         public Cell<T>? Find(T value)
         {
             for (int x = 0; x < width; x++)
@@ -139,6 +186,18 @@ namespace common
             }
             return elems;
         }
+        public IEnumerable<Cell<T>> FindAll(Func<T,bool> filter)
+        {
+            var elems = new List<Cell<T>>();
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (filter(map[y, x])) elems.Add(new Cell<T>(x, y, map[y,x]));
+                }
+            }
+            return elems;
+        }
 
         public string[] Dump()
         {
@@ -151,6 +210,17 @@ namespace common
                 sb.Clear();
             }
             return m.ToArray();
+        }
+
+        public void Each(Action<int, int, T> act)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    act(x, y, map[y,x]);
+                }
+            }
         }
     }
 }
