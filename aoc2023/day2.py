@@ -29,9 +29,7 @@ with open('day2-1.data') as input:
             'green':0,
             'blue':0
         }
-        game_ok = True
-        game = line.split(':')
-        for round in game[1].split(';'):
+        for round in line.split(':')[1].split(';'):
             for col in round.split(','):
                 n,c = col.strip().split(' ')
                 cubz[c] = max(cubz[c],int(n))
