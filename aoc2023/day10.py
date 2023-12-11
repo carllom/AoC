@@ -107,23 +107,21 @@ sn = list(filter(lambda n: coord in goesto(n), neigh(coord)))[0]
 
 s = coord
 d = sn
-while d1!= d2:
+while d != coord:
     dn = goesnext(s,d)
     delt =  tuple(np.subtract(dn, d))
-    ccw = (delt[1],-delt[0])
-    ccwn = tuple(np.add(d,ccw))
+    ccw = (delt[1],-delt[0]) # rotate ccw
+    ccwn = tuple(np.add(d,ccw)) # ccw neighbor
     # print(s, mat(s),d, mat(d), dn, mat(dn), delt, ccw)
     if mp[ccwn[1]][ccwn[0]] == '_':
         bflood(ccwn, mp,'@')
 
-    if mat(mp,d) in '7JFL':
+    if ccwn != s and mat(m,d) in '7JFL': # corner, _but not inner corner!_: rotate twice
         ccw = (ccw[1],-ccw[0])
         ccwn = tuple(np.add(d,ccw))
         if mp[ccwn[1]][ccwn[0]] == '_':
             bflood(ccwn, mp,'@')
 
-    if dn == coord:
-        break
     s = d
     d = dn
 
