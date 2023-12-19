@@ -64,7 +64,7 @@ def bflood(c, m, val):
 for d in data: expmap = buildedge(expmap, pos, d)
 expmap = bflood((len(expmap[0])//2,len(expmap)//2), expmap, '#') # just do naive select of center for now
 res = ''.join(chain(*expmap)).count('#')
-print('Day18-1',res,res==31171)
+print('Day18-1',res)
 
 # part 2 - entirely different strategy (grr..) Find area of polygon (use shoelace alg.)
 # Grow polygon by 0.5 in order to get outer area. This is done by adjusting distances depending on whether start/end corner is outer/inner
@@ -84,4 +84,4 @@ for i in range(len(data)):
     p1 = p2
     lturn = nturn
 
-print('Day18-2',abs(area)//2, abs(area)//2 == 131431655002266)
+print('Day18-2',abs(area)//2)
