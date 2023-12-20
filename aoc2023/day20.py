@@ -1,15 +1,16 @@
 from collections import deque
+from math import lcm
 
-data = dict([(l.split('->')[0].strip()[1:],[[x.strip() for x in l.split('->')[1].split(',')],l.split('->')[0].strip()[0],False]) for l in open('day20-1.data').read().splitlines()]) # name -> dest(0),type(1),state(2)
+data = {} # module: name -> [receivers], type, state
+pulses = deque() # pulse: receiver, state, sender
 
-# pulse: receiver, state, sender
-# module: name -> [receivers], type, state
-
-pulses = deque()
-
-for rcv in [m for m in data.items() if m[1][1] == '&']: # fix conjunction (&) memory - all inputs need to be prepopulated
-    asd = [(m[0],False) for m in data.items() if rcv[0] in m[1][0]]
-    data[rcv[0]][2] = dict(asd)
+def setup():
+    global data
+    data = dict([(l.split('->')[0].strip()[1:],[[x.strip() for x in l.split('->')[1].split(',')],l.split('->')[0].strip()[0],False]) for l in open('day20-1.data').read().splitlines()]) # name -> dest(0),type(1),state(2)
+    for rcv in [m for m in data.items() if m[1][1] == '&']: # fix conjunction (&) memory - all inputs need to be prepopulated
+        asd = [(m[0],False) for m in data.items() if rcv[0] in m[1][0]]
+        data[rcv[0]][2] = dict(asd)
+    pulses.clear()
 
 def simulate(pul:dict) -> dict:
     while pulses:
@@ -37,7 +38,11 @@ def pushbutton(pul:dict) -> dict:
     pul[False] +=1
     return simulate(pul)
 
+setup()
 pulsecounter = dict([(False,0),(True,0)])
 for _ in range(1000): pulsecounter = pushbutton(pulsecounter)
 
 print('Day20-1',pulsecounter[False]*pulsecounter[True])
+
+# Part 2 was solved analytically, see day20-2.md for description. Circuit reverse-engineering FTW!
+print('Day20-2',lcm(*[3847,3823,3877,4001])) # Counter reset values
