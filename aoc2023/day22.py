@@ -50,7 +50,7 @@ for b in (x for x in bricks if len(x[-1]) > 1): # find all bricks supported by a
 
 for ns in (x[2] for x in bricks if len(x[-2]) == 0): removecand.add(ns) # add bricks that do not support other bricks
 
-print('Day21-1',len(removecand))
+print('Day22-1',len(removecand))
 
 chainr = []
 for b in bricks:
@@ -68,4 +68,4 @@ for b in bricks:
                     qadd.add(supp[2])
     chainr.append((b[2],len(rs)-1))
 
-print('Day21-2',sum([x[1] for x in chainr]))
+print('Day22-2',sum([x[1] for x in chainr]))
