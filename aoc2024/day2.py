@@ -1,6 +1,3 @@
-data = [list(map(int, r.split())) for r in open('day2-1.data').read().splitlines()]
-
-
 def report(q):
     return [q[i] - q[i+1] for i in range(len(q)-1)]  # difference between each element
 
@@ -18,6 +15,7 @@ def checkreport(q):
     return True
 
 
+data = [list(map(int, r.split())) for r in open('day2-1.data').read().splitlines()]
 safe = 0
 for q in data:
     if checkreport(q):

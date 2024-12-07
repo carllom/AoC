@@ -1,11 +1,3 @@
-data = open('day5-1.data').read().splitlines()
-
-orders = []
-goodupdates = []
-badupdates = []
-first_section = True
-
-
 def breaksorder(u, orders):  # return the first order that is broken
     for k in range(len(orders)-1):
         i0 = u.index(orders[k][0]) if orders[k][0] in u else -1
@@ -16,6 +8,11 @@ def breaksorder(u, orders):  # return the first order that is broken
     return None
 
 
+data = open('day5-1.data').read().splitlines()
+orders = []
+goodupdates = []
+badupdates = []
+first_section = True
 for i in range(len(data)):
     r = data[i]
     if not data[i]:  # sections divided by empty line

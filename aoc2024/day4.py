@@ -1,6 +1,4 @@
 data = open('day4-1.data').read().splitlines()
-
-
 count = 0
 
 for line in data:  # use standard string count for horizontal
@@ -13,7 +11,6 @@ for y in range(3, len(data)):
         v = ''.join([data[y-3][x], data[y-2][x], data[y-1][x], data[y][x]])  # vertical
         if v in match:
             count += 1
-
         if x > 2:
             x1 = ''.join([data[y][x], data[y-1][x-1], data[y-2][x-2], data[y-3][x-3]])  # diagonal \
             if x1 in match:

@@ -1,12 +1,11 @@
 import re
 
-data = open('day3-1.data').read()
-
 
 def domuls(data):
     return sum([int(x[0])*int(x[1]) for x in re.findall(r'mul\((\d{1,3}),(\d{1,3})\)', data)])
 
 
+data = open('day3-1.data').read()
 print('Day3-1', domuls(data))
 
 active = True
