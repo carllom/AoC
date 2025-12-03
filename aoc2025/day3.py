@@ -10,5 +10,5 @@ def max_batt(line, nbatt):
     return int(dl)
 
 
-print('Day3-1:', sum([max_batt(line, 2) for line in data]))
-print('Day3-2:', sum([max_batt(line, 12) for line in data]))
+print('Day3-1:', sum(max_batt(line, 2) for line in data))
+print('Day3-2:', sum(max_batt(line, 12) for line in data))
