@@ -1,4 +1,5 @@
 from itertools import accumulate
+from functools import reduce
 moves = list(map(int, open('day1-1.data', encoding='utf-8').read().replace('L', '-').replace('R', '+').splitlines()))
 
 
@@ -11,4 +12,4 @@ def zero_xing(last, rot):
 
 
 print('Day1-1:', list(accumulate(moves, lambda last, rot: (last + rot) % 100, initial=50)).count(0))
-print('Day1-2:', list(accumulate(moves, zero_xing, initial=(50, 0)))[-1][1])  # accumulated is currpos, 0-cross sum
+print('Day1-2:', reduce(zero_xing, moves, (50, 0))[1])  # accumulated is currpos, 0-cross sum

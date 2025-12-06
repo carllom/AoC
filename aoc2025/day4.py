@@ -11,20 +11,15 @@ def numempty(grid, x, y):  # number of cells being '.' in the 8 adjacent cells
 
 
 def pickable_rolls(grid):  # find all pickable rolls and return position
-    for y, g_row in enumerate(grid):
-        for x, c in enumerate(g_row):
-            if c == '.':
-                continue
-            if numempty(grid, x, y) > 4:
-                yield (x, y)
+    return [(x, y) for y, row in enumerate(grid) for x, c in enumerate(row) if c != '.' and numempty(grid, x, y) > 4]
 
 
-print('Day4-1:', len(list(pickable_rolls([row[:] for row in data]))))
+print('Day4-1:', len(pickable_rolls([row[:] for row in data])))
 
 pickable = {(-1, -1)}  # dummy initial value
 n_rolls = 0
 while len(pickable) > 0:
-    pickable = list(pickable_rolls(data))
+    pickable = pickable_rolls(data)
     n_rolls += len(pickable)
     for px, py in pickable:
         data[py][px] = '.'  # remove picked roll
